@@ -1,4 +1,4 @@
-net = dlnetwork;
+net = layerGraph();
 
 tempNet = helperNnetOnnxLayerCustomInputLayerMultiOutput("image_embeddings",4,compose("Layer input must be a labeled dlarray with the dimension order shown in the ONNX model file.\nYou must pass the size:\n    (1, 256, 64, 64)\nThe dlarray must have a format string consisting of one 'U' for each dimension: 'dlarray(data, 'UUUU')'"),true,"in",["image_embeddings" "image_embeddingsNumDims"]);
 net = addLayers(net,tempNet);
@@ -145,6 +145,7 @@ net = connectLayers(net,"Erf_To_ResizeLayer1135/masks","masksOutput");
 net = connectLayers(net,"Erf_To_ResizeLayer1135/low_res_masks","low_res_masksOutput");
 
 %% Define Function
+
 function layer = helperNnetOnnxLayerCustomInputLayerMultiOutput(name,numDims,inputInformation,isInputForwardONNX,inputNames,outputNames)
 % Define this function before running the script.
 % The function must create and return a layer of type nnet.onnx.layer.CustomInputLayerMultiOutput.

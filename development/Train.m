@@ -100,7 +100,7 @@ opts = trainingOptions("sgdm",...
 % Train the network using the combined training data store, cdsTrain. The combined training data store contains single signal frames and true pixel labels.
 trainNow = true;
 if trainNow
-    [net,trainInfo] = trainNetwork(cdsTrain,layers,opts);
+    [net,trainInfo] = trainNetwork(cdsTrain,lgraph,opts);
 end
 
 
