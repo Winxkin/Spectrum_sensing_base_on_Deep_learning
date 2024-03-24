@@ -4,9 +4,9 @@ lUnetpp_gconv = layerGraph();
 
 tempLayers = [
     imageInputLayer([256 256 3],"Name","inputs","Normalization","none")
-    groupedConvolution2dLayer([3 3],64,2,"Name","Conv_00_0","Padding",[1 1 1 1])
+    convolution2dLayer([3 3],64,"Name","Conv_00_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_00_0")
-    groupedConvolution2dLayer([3 3],64,2,"Name","Conv_00_1","Padding",[1 1 1 1])
+    convolution2dLayer([3 3],64,"Name","Conv_00_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_00_1")];
 lUnetpp_gconv = addLayers(lUnetpp_gconv,tempLayers);
 
