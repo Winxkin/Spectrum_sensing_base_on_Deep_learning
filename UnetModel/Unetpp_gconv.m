@@ -149,9 +149,9 @@ tempLayers = [
     reluLayer("Name","Relu_04_2")
     groupedConvolution2dLayer([3 3],64,2,"Name","Conv_04_3","Padding",[1 1 1 1])
     reluLayer("Name","Relu_04_3")
-    groupedConvolution2dLayer([3 3],2,2,"Name","Conv_04_4","Padding",[1 1 1 1])
+    convolution2dLayer([3 3],2,"Name","Conv_04_4","Padding",[1 1 1 1])
     reluLayer("Name","Relu_04_4")
-    groupedConvolution2dLayer([3 3],1,2,"Name","Conv_04_5","Padding",[1 1 1 1])
+    convolution2dLayer([3 3],1,"Name","Conv_04_5","Padding",[1 1 1 1])
     reluLayer("Name","Relu_04_5")
     sigmoidLayer("Name","sigmoidLayer_04_0")];
 lUnetpp_gconv = addLayers(lUnetpp_gconv,tempLayers);
