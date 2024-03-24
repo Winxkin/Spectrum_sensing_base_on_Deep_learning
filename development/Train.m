@@ -1,4 +1,9 @@
-% Spectrum Sensing with Deep Learning to Identify 5G and LTE Signals
+
+%% adding libraries path
+addpath("Gen_data\")
+addpath("UnetModel\")
+load("UnetModel\UnetDL.mat")
+%% Spectrum Sensing with Deep Learning to Identify 5G and LTE Signals
 % This example shows how to train a semantic segmentation network using deep learning for spectrum monitoring. One of the uses of spectrum monitoring is to characterize spectrum occupancy. The neural network in this example is trained to identify 5G NR and LTE signals in a wideband spectrogram.
 
 % Introduction
@@ -9,7 +14,7 @@
 %  Test the trained network with synthetic signals.
 %  Use an SDR to test the network with over the air (OTA) signals.
 
-% Generate Training Data
+%% Generate Training Data
 % One advantage of wireless signals in the deep learning domain is the fact that the signals are synthesized. Also, we have highly reliable channel and RF impairment models. As a result, instead of collecting and manually labeling signals, you can generate 5G NR signals using 5G Toolbox™ and LTE signals using LTE Toolbox™ functions. You can pass these signals through standards-specified channel models to create the training data.
 % Train the network with frames that contain only 5G NR or LTE signals and then shift these signals in frequency randomly within the band of interest. Each frame is 40 ms long, which is the duration of 40 subframes. The network assumes that the 5G NR or LTE signal occupies the same band for the whole frame duration. To test the network performance, create frames that contain both 5G NR and LTE signals on distinct random bands within the band of interest.
 % Use a sampling rate of 61.44 MHz. This rate is high enough to process most of the latest standard signals and several low-cost software defined radio (SDR) systems can sample at this rate providing about 50 MHz of useful bandwidth. To monitor a wider band, you can increase the sample rate, regenerate training frames and retrain the network.
@@ -35,7 +40,7 @@ if generateTrainData
     helperSpecSenseTrainingData(numFramesPerStandard,imageSize,trainDir,numSubFrames,sampleRate);
 end
 
-% Load Training Data
+%% Load Training Data
 % Use the imageDatastore function to load training images with the spectrogram of 5G NR and LTE signals. The imageDatastore function enables you to efficiently load a large collection of images from disk. Spectrogram images are stored in .png files.
 imds = imageDatastore(trainDir,'IncludeSubfolders',false,'FileExtensions','.png');
 
@@ -45,7 +50,7 @@ pixelLabelID = [127 255 0];
 pxdsTruth = pixelLabelDatastore(trainDir,classNames,pixelLabelID,...
     'IncludeSubfolders',false,'FileExtensions','.hdf');
 
-% Analyze Dataset Statistics
+%% Analyze Dataset Statistics
 % To see the distribution of class labels in the training dataset, use the countEachLabel function to count the number of pixels by class label, and plot the pixel counts by class.
 tbl = countEachLabel(pxdsTruth);
 frequency = tbl.PixelCount/sum(tbl.PixelCount);
@@ -68,21 +73,14 @@ cdsTrain = pixelLabelImageDatastore(imdsTrain,pxdsTrain,'OutputSize',imageSize);
 cdsVal = pixelLabelImageDatastore(imdsVal,pxdsVal,'OutputSize',imageSize);
 
 
-run(fullfile(pwd,'development/SampleNet.m'));
-
-
-
-% % Balance Classes Using Class Weighting
+%% % Balance Classes Using Class Weighting
 % % To improve training when classes in the training set are not balanced, you can use class weighting to balance the classes. Use the pixel label counts computed earlier with the countEachLabel function and calculate the median frequency class weights.
-% imageFreq = tbl.PixelCount ./ tbl.ImagePixelCount;
-% classWeights = median(imageFreq) ./ imageFreq;
-%
-%
-% % Specify the class weights using a pixelClassificationLayer.
-% pxLayer = pixelClassificationLayer('Name','labels','Classes',tbl.Name,'ClassWeights',classWeights);
-% layers = replaceLayer(layers,"classification",pxLayer);
 
-% Select Training Options
+imageFreq = tbl.PixelCount ./ tbl.ImagePixelCount;
+classWeights = median(imageFreq) ./ imageFreq;
+classWeights = classWeights/(sum(classWeights)+eps(class(classWeights)));
+
+%% Select Training Options
 % Configure training using the trainingOptions function to specify the stochastic gradient descent with momentum (SGDM) optimization algorithm and the hyper-parameters used for SGDM. To get the best performance from the network, you can use the Experiment Manager app to optimize training options.
 opts = trainingOptions("sgdm",...
     MiniBatchSize = 40,...
@@ -97,14 +95,14 @@ opts = trainingOptions("sgdm",...
     OutputNetwork = "best-validation-loss",...
     Plots = 'training-progress')
 
-% Train the network using the combined training data store, cdsTrain. The combined training data store contains single signal frames and true pixel labels.
+%% Train the network using the combined training data store, cdsTrain. The combined training data store contains single signal frames and true pixel labels.
 trainNow = true;
 if trainNow
-    [net,trainInfo] = trainNetwork(cdsTrain,lgraph,opts);
+    [net,trainInfo] = trainNetwork(cdsTrain,lUnet,opts);
 end
 
 
-% Test with Synthetic Signals
+%% Test with Synthetic Signals
 % Test the network signal identification performance using signals that contain both 5G NR and LTE signals. Use the semanticseg function to get the pixel estimates of the spectrogram images in the test data set. Use the evaluateSemanticSegmentation function to compute various metrics to evaluate the quality of the semantic segmentation results.
 dataDir = fullfile(trainDir,'LTE_NR');
 imds = imageDatastore(dataDir,'IncludeSubfolders',false,'FileExtensions','.png');
@@ -113,7 +111,7 @@ pxdsTruth = pixelLabelDatastore(dataDir,classNames,pixelLabelID,...
     'IncludeSubfolders',false,'FileExtensions','.hdf');
 metrics = evaluateSemanticSegmentation(pxdsResults,pxdsTruth);
 
-% Plot the normalized confusion matrix for all test frames as a heat map.
+%% Plot the normalized confusion matrix for all test frames as a heat map.
 normConfMatData = metrics.NormalizedConfusionMatrix.Variables;
 figure
 h = heatmap(classNames,classNames,100*normConfMatData);
@@ -121,7 +119,7 @@ h.XLabel = 'Predicted Class';
 h.YLabel = 'True Class';
 h.Title = 'Normalized Confusion Matrix (%)';
 
-% Plot the histogram of the per-image intersection over union (IoU). For each class, IoU is the ratio of correctly classified pixels to the total number of ground truth and predicted pixels in that class.
+%% Plot the histogram of the per-image intersection over union (IoU). For each class, IoU is the ratio of correctly classified pixels to the total number of ground truth and predicted pixels in that class.
 imageIoU = metrics.ImageMetrics.MeanIoU;
 figure
 histogram(imageIoU)
@@ -130,7 +128,7 @@ xlabel('IoU')
 ylabel('Number of Frames')
 title('Frame Mean IoU')
 
-% Inspecting low SNR frames shows that the spectrogram images do not contain visual features that can help the network identify the low SNR frames correctly. Repeat the same process, considering only the frames with average SNR of 50dB or 100dB and ignoring the frames with average SNR of 40dB.
+%% Inspecting low SNR frames shows that the spectrogram images do not contain visual features that can help the network identify the low SNR frames correctly. Repeat the same process, considering only the frames with average SNR of 50dB or 100dB and ignoring the frames with average SNR of 40dB.
 files = dir(fullfile(dataDir,'*.mat'));
 dataFiles = {};
 labelFiles = {};
@@ -147,7 +145,7 @@ pxdsResults = semanticseg(imds,net,"WriteLocation",tempdir);
 pxdsTruth = pixelLabelDatastore(labelFiles,classNames,pixelLabelID);
 metrics = evaluateSemanticSegmentation(pxdsResults,pxdsTruth);
 
-% Considering only the set of frames with higher SNR, replot the normalized confusion matrix and observe the improved network accuracy.
+%% Considering only the set of frames with higher SNR, replot the normalized confusion matrix and observe the improved network accuracy.
 normConfMatData = metrics.NormalizedConfusionMatrix.Variables;
 figure
 h = heatmap(classNames,classNames,100*normConfMatData);
@@ -155,7 +153,7 @@ h.XLabel = 'Predicted Class';
 h.YLabel = 'True Class';
 h.Title = 'Normalized Confusion Matrix (%)';
 
-% Considering only the set of frames with higher SNR, replot the per-image IoU histogram and observe the improved distribution.
+%% Considering only the set of frames with higher SNR, replot the per-image IoU histogram and observe the improved distribution.
 imageIoU = metrics.ImageMetrics.MeanIoU;
 figure
 histogram(imageIoU)
@@ -164,7 +162,7 @@ xlabel('IoU')
 ylabel('Number of Frames')
 title('Frame Mean IoU')
 
-% Identify 5G NR and LTE Signals in Spectrogram
+%% Identify 5G NR and LTE Signals in Spectrogram
 % Visualize the received spectrum, true labels, and predicted labels for the image with index 602.
 imgIdx = 602;
 rcvdSpectrogram = readimage(imds,imgIdx);
@@ -177,7 +175,7 @@ figure
 helperSpecSenseDisplayIdentifiedSignals(rcvdSpectrogram,predictedLabels, ...
     classNames,sampleRate,0,frameDuration)
 
-% Test with Over-the-Air Signals
+%% Test with Over-the-Air Signals
 % Test the performance of the trained network using over-the-air signal captures. Find a nearby base station and tune the center frequency of your radio to cover the band of the signals you want to identify. This example sets the center frequency to 2.35 GHz. If you have at least one ADALM-PLUTO radio and have installed Communication Toolbox Support Package for ADALM-PLUTO Radio, you can run this section of the code. In case you do not have access to an ADALM-PLUTO radio, this example shows results of a test conducted using captured signals.
 runSDRSection = false;
 if helperIsPlutoSDRInstalled()
@@ -233,7 +231,7 @@ else
     imshow('nr_capture_result2.png')
 end
 
-% Conclusions and Further Exploration
+%% Conclusions and Further Exploration
 % The trained network can distinguish 5G NR and LTE signals including two example captures from real base stations. The network may not be able to identify every captured signal correctly. In such cases, enhance the training data either by generating more representative synthetic signals or capturing over-the-air signals and including these in the training set.
 % You can use the LTE Cell Search, MIB and SIB1 Recovery and the NR Cell Search and MIB and SIB1 Recovery examples to identify LTE and 5G NR base stations manually to capture training data, respectively.
 % If you need to monitor wider bands of spectrum, increase the sampleRate, regenerate the training data and retrain the network.

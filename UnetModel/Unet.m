@@ -78,16 +78,21 @@ tempLayers = [
     reluLayer("Name","Relu_1_4")
     convolution2dLayer([3 3],1,"Name","Conv_1_5","Padding",[1 1 1 1])
     reluLayer("Name","Relu_1_5")
-    sigmoidLayer("Name","sigmoidLayer_1_0")];
+    sigmoidLayer("Name","sigmoidLayer_1_0")
+    ];
 lUnet = addLayers(lUnet,tempLayers);
 
 %% classification layer
-numofclass = 3;
+classNames = ["NR" "LTE" "Noise"];
+
 tempLayers = [
-    maxPooling2dLayer([5 5],"Name","maxpooling","Padding","same")
-    fullyConnectedLayer(numofclass,"Name","fullyconnected")
-    classificationLayer("Name","classoutput")
+    convolution2dLayer([3 3],128,"Name","conv_Output_0","Padding",[1 1 1 1]);
+    reluLayer("Name","Relu_Output_0")
+    convolution2dLayer(1,numel(classNames))
+    softmaxLayer("Name","Softmax")
+    pixelClassificationLayer('Classes',classNames);
     ];
+
 lUnet = addLayers(lUnet,tempLayers);
 
 % clean up helper variable
@@ -105,6 +110,9 @@ lUnet = connectLayers(lUnet,"resize-scale_5_0","concat_4_0/in1");
 lUnet = connectLayers(lUnet,"resize-scale_4_0","concat_3_0/in1");
 lUnet = connectLayers(lUnet,"resize-scale_3_0","concat_2_0/in1");
 lUnet = connectLayers(lUnet,"resize-scale_2_0","concat_1_0/in1");
-lUnet = connectLayers(lUnet,"sigmoidLayer_1_0","maxpooling");
+%% Output Layer connected
+lUnet = connectLayers(lUnet,"sigmoidLayer_1_0","conv_Output_0");
+
+%% Plot Network
 plot(lUnet);
 
