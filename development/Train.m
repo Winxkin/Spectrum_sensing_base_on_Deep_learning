@@ -1,7 +1,8 @@
 
 %% adding libraries path
 addpath("Gen_data\")
-
+addpath("UnetModel\")
+load("UnetModel\UnetDL.mat")
 %% Spectrum Sensing with Deep Learning to Identify 5G and LTE Signals
 % This example shows how to train a semantic segmentation network using deep learning for spectrum monitoring. One of the uses of spectrum monitoring is to characterize spectrum occupancy. The neural network in this example is trained to identify 5G NR and LTE signals in a wideband spectrogram.
 
@@ -74,13 +75,10 @@ cdsVal = pixelLabelImageDatastore(imdsVal,pxdsVal,'OutputSize',imageSize);
 
 %% % Balance Classes Using Class Weighting
 % % To improve training when classes in the training set are not balanced, you can use class weighting to balance the classes. Use the pixel label counts computed earlier with the countEachLabel function and calculate the median frequency class weights.
+
 imageFreq = tbl.PixelCount ./ tbl.ImagePixelCount;
 classWeights = median(imageFreq) ./ imageFreq;
-
-
-% Specify the class weights using a pixelClassificationLayer.
-pxLayer = pixelClassificationLayer('Name','labels','Classes',tbl.Name,'ClassWeights',classWeights);
-layers = replaceLayer(layers,"classification",pxLayer);
+classWeights = classWeights/(sum(classWeights)+eps(class(classWeights)));
 
 %% Select Training Options
 % Configure training using the trainingOptions function to specify the stochastic gradient descent with momentum (SGDM) optimization algorithm and the hyper-parameters used for SGDM. To get the best performance from the network, you can use the Experiment Manager app to optimize training options.
@@ -97,10 +95,10 @@ opts = trainingOptions("sgdm",...
     OutputNetwork = "best-validation-loss",...
     Plots = 'training-progress')
 
-% Train the network using the combined training data store, cdsTrain. The combined training data store contains single signal frames and true pixel labels.
+%% Train the network using the combined training data store, cdsTrain. The combined training data store contains single signal frames and true pixel labels.
 trainNow = true;
 if trainNow
-    [net,trainInfo] = trainNetwork(cdsTrain,lgraph,opts);
+    [net,trainInfo] = trainNetwork(cdsTrain,lUnet,opts);
 end
 
 
