@@ -156,8 +156,18 @@ tempLayers = [
     sigmoidLayer("Name","sigmoidLayer_04_0")];
 lUnetp = addLayers(lUnetp,tempLayers);
 
+%% classification layer
+numofclass = 3;
+tempLayers = [
+    maxPooling2dLayer([5 5],"Name","maxpooling","Padding","same")
+    fullyConnectedLayer(numofclass,"Name","fullyconnected")
+    classificationLayer("Name","classoutput")
+    ];
+lUnetp = addLayers(lUnetp,tempLayers);
+
 % clean up helper variable
 clear tempLayers;
+
 %% Connection
 lUnetp = connectLayers(lUnetp,"Relu_00_1","MaxPool_10_0");
 lUnetp = connectLayers(lUnetp,"Relu_00_1","concat_01_0/in1");
@@ -193,6 +203,7 @@ lUnetp = connectLayers(lUnetp,"resize-scale_12_0","concat_13_0/in2");
 lUnetp = connectLayers(lUnetp,"resize-scale_12_0","concat_03_0/in2");
 lUnetp = connectLayers(lUnetp,"Relu_13_3","concat_04_0/in1");
 lUnetp = connectLayers(lUnetp,"Relu_03_1","concat_04_0/in2");
+lUnetp = connectLayers(lUnetp,"sigmoidLayer_04_0","maxpooling");
 
 plot(lUnetp);
 
