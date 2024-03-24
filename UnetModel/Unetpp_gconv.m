@@ -157,11 +157,14 @@ tempLayers = [
 lUnetpp_gconv = addLayers(lUnetpp_gconv,tempLayers);
 
 %% classification layer
-numofclass = 3;
+classNames = ["NR" "LTE" "Noise"];
+
 tempLayers = [
-    maxPooling2dLayer([5 5],"Name","maxpooling","Padding","same")
-    fullyConnectedLayer(numofclass,"Name","fullyconnected")
-    classificationLayer("Name","classoutput")
+    convolution2dLayer([3 3],128,"Name","conv_Output_0","Padding",[1 1 1 1]);
+    reluLayer("Name","Relu_Output_0")
+    convolution2dLayer(1,numel(classNames))
+    softmaxLayer("Name","Softmax")
+    pixelClassificationLayer('Classes',classNames);
     ];
 lUnetpp_gconv = addLayers(lUnetpp_gconv,tempLayers);
 
@@ -211,7 +214,9 @@ lUnetpp_gconv = connectLayers(lUnetpp_gconv,"resize-scale_12_0","concat_13_0/in2
 lUnetpp_gconv = connectLayers(lUnetpp_gconv,"resize-scale_12_0","concat_03_0/in2");
 lUnetpp_gconv = connectLayers(lUnetpp_gconv,"Relu_13_3","concat_04_0/in1");
 lUnetpp_gconv = connectLayers(lUnetpp_gconv,"Relu_03_1","concat_04_0/in2");
-lUnetpp_gconv = connectLayers(lUnetpp_gconv,"sigmoidLayer_04_0","maxpooling");
+
+%% Connect to output layer
+lUnetpp_gconv = connectLayers(lUnetpp_gconv,"sigmoidLayer_04_0","conv_Output_0");
 
 %% Plot
 plot(lUnetpp_gconv);
