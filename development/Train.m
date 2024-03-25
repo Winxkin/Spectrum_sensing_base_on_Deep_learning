@@ -65,7 +65,7 @@ ylabel('Frequency')
 
 % Ideally, all classes would have an equal number of observations. However, with wireless signals it is common for the classes in the training set to be imbalanced. 5G NR signals may have larger bandwidth than LTE signals, and noise fills the background. Because the learning is biased in favor of the dominant classes, imbalance in the number of observations per class can be detrimental to the learning process. In the Balance Classes Using Class Weighting section, class weighting is used to mitigate bias caused by imbalance in the number of observations per class.
 
-% Prepare Training, Validation, and Test Sets
+%% Prepare Training, Validation, and Test Sets
 % The deep neural network uses 80% of the single signal images from the dataset for training and, 20% of the images for validation. The helperSpecSensePartitionData function randomly splits the image and pixel label data into training and validation sets.
 
 [imdsTrain,pxdsTrain,imdsVal,pxdsVal] = helperSpecSensePartitionData(imds,pxdsTruth,[80 20]);
@@ -83,7 +83,7 @@ classWeights = classWeights/(sum(classWeights)+eps(class(classWeights)));
 %% Select Training Options
 % Configure training using the trainingOptions function to specify the stochastic gradient descent with momentum (SGDM) optimization algorithm and the hyper-parameters used for SGDM. To get the best performance from the network, you can use the Experiment Manager app to optimize training options.
 opts = trainingOptions("sgdm",...
-    MiniBatchSize = 40,...
+    MiniBatchSize = 10,...
     MaxEpochs = 5, ...
     LearnRateSchedule = "piecewise",...
     InitialLearnRate = 0.02,...
@@ -98,6 +98,7 @@ opts = trainingOptions("sgdm",...
 %% Train the network using the combined training data store, cdsTrain. The combined training data store contains single signal frames and true pixel labels.
 trainNow = true;
 if trainNow
+    gpuDevice(1)
     [net,trainInfo] = trainNetwork(cdsTrain,lUnet,opts);
 end
 
