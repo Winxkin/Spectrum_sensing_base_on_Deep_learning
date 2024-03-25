@@ -106,6 +106,7 @@ end
 
 %% Test with Synthetic Signals
 % Test the network signal identification performance using signals that contain both 5G NR and LTE signals. Use the semanticseg function to get the pixel estimates of the spectrogram images in the test data set. Use the evaluateSemanticSegmentation function to compute various metrics to evaluate the quality of the semantic segmentation results.
+tempdir = "..\OutputTrainning\temp";
 dataDir = fullfile(trainDir,'LTE_NR');
 imds = imageDatastore(dataDir,'IncludeSubfolders',false,'FileExtensions','.png');
 pxdsResults = semanticseg(imds,net,"MinibatchSize",mbs,"WriteLocation",tempdir);
@@ -143,7 +144,7 @@ for p=1:numel(files)
     end
 end
 imds = imageDatastore(dataFiles);
-pxdsResults = semanticseg(imds,net,"WriteLocation",tempdir);
+pxdsResults = semanticseg(imds,net,"MinibatchSize",mbs,"WriteLocation",tempdir);
 pxdsTruth = pixelLabelDatastore(labelFiles,classNames,pixelLabelID);
 metrics = evaluateSemanticSegmentation(pxdsResults,pxdsTruth);
 
@@ -166,7 +167,7 @@ title('Frame Mean IoU')
 
 %% Identify 5G NR and LTE Signals in Spectrogram
 % Visualize the received spectrum, true labels, and predicted labels for the image with index 602.
-imgIdx = 602;
+imgIdx = 31;
 rcvdSpectrogram = readimage(imds,imgIdx);
 trueLabels = readimage(pxdsTruth,imgIdx);
 predictedLabels = readimage(pxdsResults,imgIdx);
