@@ -1,7 +1,7 @@
 lUnet = layerGraph();
 
 tempLayers = [
-    imageInputLayer([256 256 3],"Name","inputs","Normalization","none")
+    imageInputLayer([128 128 3],"Name","inputs","Normalization","none")
     convolution2dLayer([3 3],64,"Name","Conv_1_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_1_0")
     convolution2dLayer([3 3],64,"Name","Conv_1_1","Padding",[1 1 1 1])
@@ -83,7 +83,7 @@ tempLayers = [
 lUnet = addLayers(lUnet,tempLayers);
 
 %% classification layer
-classNames = ["NR" "LTE" "Noise"];
+classNames = ["Noise" "NR" "LTE" "Unknown"];
 
 tempLayers = [
     convolution2dLayer([3 3],128,"Name","conv_Output_0","Padding",[1 1 1 1]);
