@@ -49,7 +49,8 @@ TrBlkOffVec = {1,2,3,4,5,6,7,8};
 
 % Channel Parameters
 SNRMin = 0;   % dB
-SNRMax = 40;   % dB
+%SNRMax = 40;   % dB
+SNRMax = 30;   % dB Huan Nguyen-Duy modified
 
 DopplerMin = 0;
 DopplerMax = 500;
