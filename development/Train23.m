@@ -20,7 +20,8 @@ if trainingDataSource == "Generated data"
 end
 
 %% Load Training Data
-folders = [trainDir,fullfile(trainDir,"captured")];
+trainDir = fullfile(trainDirRoot,"128x128");
+folders = [trainDir,fullfile(trainDir,"LTE_NR")];
 imds = imageDatastore(folders,FileExtensions=".png");
 
 numClasses = length(classNames);
