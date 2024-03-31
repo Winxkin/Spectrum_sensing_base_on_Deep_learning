@@ -22,7 +22,7 @@ tempLayers = resize2dLayer("Name","resize-scale_10_0","GeometricTransformMode","
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 
 tempLayers = [
-    concatenationLayer(3,2,"Name","concat_01_0")
+    concatenationLayer(3,3,"Name","concat_01_0")
     groupedConvolution2dLayer([3 3],64,2*2,"Name","Conv_01_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_01_0")
     groupedConvolution2dLayer([3 3],64,2*2,"Name","Conv_01_1","Padding",[1 1 1 1])
@@ -162,7 +162,7 @@ lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 %% Layer 0 -> 4 gates
 %% 01 position
 tempLayers = [
-    convolution2dLayer([3 3],64,"Name","ConvAG_01_0","Padding","same")
+    convolution2dLayer([3 3],128,"Name","ConvAG_01_0","Padding","same")
     convolution2dLayer([1 1],128,"Name","ConvAG_01_1","Padding","same")
     ];
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
@@ -178,7 +178,9 @@ tempLayers = [
     additionLayer(2,"Name","additionAG_01_0")
     reluLayer("Name","reluAG_01_0")
     convolution2dLayer([1 1],1,"Name","ConvAG_01_4","Padding","same")
-    sigmoidLayer("Name","sigmoid_01_0")];
+    sigmoidLayer("Name","sigmoid_01_0")
+    convolution2dLayer([1 1],4,"Name","ConvAG_01_5","Padding","same")
+    ];
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 
 % interconnection
@@ -476,7 +478,10 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_13_3","concat_04_0/in1");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_03_1","concat_04_0/in2");
 
 %% Connection with attention gate
-
+% 01
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_00_1","ConvAG_01_2");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_10_0","ConvAG_01_0");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_01_5","concat_01_0/in3");
 
 %% Connect to output layer
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"sigmoidLayer_04_0","conv_Output_0");
