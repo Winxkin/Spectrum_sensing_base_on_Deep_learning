@@ -65,7 +65,7 @@ ylabel('Frequency')
 
 % Ideally, all classes would have an equal number of observations. However, with wireless signals it is common for the classes in the training set to be imbalanced. 5G NR signals may have larger bandwidth than LTE signals, and noise fills the background. Because the learning is biased in favor of the dominant classes, imbalance in the number of observations per class can be detrimental to the learning process. In the Balance Classes Using Class Weighting section, class weighting is used to mitigate bias caused by imbalance in the number of observations per class.
 
-% Prepare Training, Validation, and Test Sets
+%% Prepare Training, Validation, and Test Sets
 % The deep neural network uses 80% of the single signal images from the dataset for training and, 20% of the images for validation. The helperSpecSensePartitionData function randomly splits the image and pixel label data into training and validation sets.
 
 [imdsTrain,pxdsTrain,imdsVal,pxdsVal] = helperSpecSensePartitionData(imds,pxdsTruth,[80 20]);
@@ -82,8 +82,9 @@ classWeights = classWeights/(sum(classWeights)+eps(class(classWeights)));
 
 %% Select Training Options
 % Configure training using the trainingOptions function to specify the stochastic gradient descent with momentum (SGDM) optimization algorithm and the hyper-parameters used for SGDM. To get the best performance from the network, you can use the Experiment Manager app to optimize training options.
+mbs = 10;
 opts = trainingOptions("sgdm",...
-    MiniBatchSize = 40,...
+    MiniBatchSize = mbs,...
     MaxEpochs = 5, ...
     LearnRateSchedule = "piecewise",...
     InitialLearnRate = 0.02,...
@@ -98,15 +99,17 @@ opts = trainingOptions("sgdm",...
 %% Train the network using the combined training data store, cdsTrain. The combined training data store contains single signal frames and true pixel labels.
 trainNow = true;
 if trainNow
+    gpuDevice(1)
     [net,trainInfo] = trainNetwork(cdsTrain,lUnet,opts);
 end
 
 
 %% Test with Synthetic Signals
 % Test the network signal identification performance using signals that contain both 5G NR and LTE signals. Use the semanticseg function to get the pixel estimates of the spectrogram images in the test data set. Use the evaluateSemanticSegmentation function to compute various metrics to evaluate the quality of the semantic segmentation results.
+tempdir = "..\OutputTrainning\temp";
 dataDir = fullfile(trainDir,'LTE_NR');
 imds = imageDatastore(dataDir,'IncludeSubfolders',false,'FileExtensions','.png');
-pxdsResults = semanticseg(imds,net,"WriteLocation",tempdir);
+pxdsResults = semanticseg(imds,net,"MinibatchSize",mbs,"WriteLocation",tempdir);
 pxdsTruth = pixelLabelDatastore(dataDir,classNames,pixelLabelID,...
     'IncludeSubfolders',false,'FileExtensions','.hdf');
 metrics = evaluateSemanticSegmentation(pxdsResults,pxdsTruth);
@@ -141,7 +144,7 @@ for p=1:numel(files)
     end
 end
 imds = imageDatastore(dataFiles);
-pxdsResults = semanticseg(imds,net,"WriteLocation",tempdir);
+pxdsResults = semanticseg(imds,net,"MinibatchSize",mbs,"WriteLocation",tempdir);
 pxdsTruth = pixelLabelDatastore(labelFiles,classNames,pixelLabelID);
 metrics = evaluateSemanticSegmentation(pxdsResults,pxdsTruth);
 
@@ -164,7 +167,7 @@ title('Frame Mean IoU')
 
 %% Identify 5G NR and LTE Signals in Spectrogram
 % Visualize the received spectrum, true labels, and predicted labels for the image with index 602.
-imgIdx = 602;
+imgIdx = 31;
 rcvdSpectrogram = readimage(imds,imgIdx);
 trueLabels = readimage(pxdsTruth,imgIdx);
 predictedLabels = readimage(pxdsResults,imgIdx);
