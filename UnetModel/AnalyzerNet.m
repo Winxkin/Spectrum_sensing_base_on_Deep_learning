@@ -6,4 +6,6 @@ analyzeNetwork(lUnetpp_gconv);
 analyzeNetwork(lUnetE_gconv);
 analyzeNetwork(lUnetp_gconv);
 analyzeNetwork(lUnetpp_AGgconv);
+analyzeNetwork(lUnetpp_AgSPPgconv);
+
 
