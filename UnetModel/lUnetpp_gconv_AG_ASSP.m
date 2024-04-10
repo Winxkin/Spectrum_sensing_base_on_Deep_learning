@@ -87,7 +87,10 @@ tempLayers = [
     groupedConvolution2dLayer([3 3],32,32*4,"Name","Conv_40_0","Padding",[1 1 1 1])
     groupedConvolution2dLayer([3 3],32,32*4,"Name","Conv_40_1","Padding",[1 1 1 1])
     dropoutLayer(0.5,"Name","dropout_40_1")
-    resize2dLayer("Name","resize-scale_40_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])];
+    ];
+lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
+
+tempLayers =   resize2dLayer("Name","resize-scale_40_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2]);
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
@@ -157,6 +160,26 @@ tempLayers = [
     reluLayer("Name","Relu_04_5")
     sigmoidLayer("Name","sigmoidLayer_04_0")];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
+
+%% ASSP Layer
+
+tempLayers = convolution2dLayer([3 3],64,"Name","ASSP_conv_01","Padding","same");
+lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
+
+tempLayers = convolution2dLayer([3 3],128,"Name","ASSP_conv_02","DilationFactor",[2 2],"Padding","same");
+lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
+
+tempLayers = convolution2dLayer([3 3],192,"Name","ASSP_conv_03","DilationFactor",[3 3],"Padding","same");
+lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
+
+
+tempLayers = concatenationLayer(3,3,"Name","ASSP_concat_01");
+lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
+
+lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"ASSP_conv_01","ASSP_concat_01/in1");
+lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"ASSP_conv_02","ASSP_concat_01/in2");
+lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"ASSP_conv_03","ASSP_concat_01/in3");
+
 
 %% Attention gate
 
@@ -335,6 +358,12 @@ lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"Relu_12_1","concat_13_0/i
 lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"resize-scale_12_0","concat_03_0/in2");
 %lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"resize-scale_13_0","concat_04_0/in1");
 lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"Relu_03_1","concat_04_0/in2");
+
+%% Connect to ASSP module
+lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"dropout_40_1","ASSP_conv_01");
+lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"dropout_40_1","ASSP_conv_02");
+lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"dropout_40_1","ASSP_conv_03");
+lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"ASSP_concat_01/out","resize-scale_40_0");
 
 %% Connect to Attention gates
 lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"Relu_03_1","ConvAG_04_2"); 
