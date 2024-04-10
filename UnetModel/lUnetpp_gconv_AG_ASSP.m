@@ -12,9 +12,9 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     maxPooling2dLayer([2 2],"Name","MaxPool_10_0","Stride",[2 2])
-    groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_10_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,4*4,"Name","Conv_10_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_10_0")
-    groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_10_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,4*4,"Name","Conv_10_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_10_1")];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
@@ -23,17 +23,17 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,2,"Name","concat_01_0")
-    groupedConvolution2dLayer([3 3],32,2*2,"Name","Conv_01_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,2*4,"Name","Conv_01_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_01_0")
-    groupedConvolution2dLayer([3 3],32,2*2,"Name","Conv_01_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,2*4,"Name","Conv_01_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_01_1")];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     maxPooling2dLayer([2 2],"Name","MaxPool_20_0","Stride",[2 2])
-    groupedConvolution2dLayer([3 3],32,8*2,"Name","Conv_20_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,8*4,"Name","Conv_20_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_20_0")
-    groupedConvolution2dLayer([3 3],32,8*2,"Name","Conv_20_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,8*4,"Name","Conv_20_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_20_1")];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
@@ -42,17 +42,17 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,2,"Name","concat_11_0")
-    groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_11_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,4*4,"Name","Conv_11_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_11_0")
-    groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_11_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,4*4,"Name","Conv_11_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_11_1")];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     maxPooling2dLayer([2 2],"Name","MaxPool_30_0","Stride",[2 2])
-    groupedConvolution2dLayer([3 3],32,16*2,"Name","Conv_30_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,16*4,"Name","Conv_30_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_30_0")
-    groupedConvolution2dLayer([3 3],32,16*2,"Name","Conv_30_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,16*4,"Name","Conv_30_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_30_1")];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
@@ -61,9 +61,9 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,2,"Name","concat_21_0")
-    groupedConvolution2dLayer([3 3],32,8*2,"Name","Conv_21_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,8*4,"Name","Conv_21_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_21_0")
-    groupedConvolution2dLayer([3 3],32,8*2,"Name","Conv_21_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,8*4,"Name","Conv_21_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_21_1")
     resize2dLayer("Name","resize-scale_21_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
@@ -73,9 +73,9 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,3,"Name","concat_02_0")
-    groupedConvolution2dLayer([3 3],32,2*2,"Name","Conv_02_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,2*4,"Name","Conv_02_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_02_0")
-    groupedConvolution2dLayer([3 3],32,2*2,"Name","Conv_02_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,2*4,"Name","Conv_02_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_02_1")];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
@@ -84,26 +84,26 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     maxPooling2dLayer([2 2],"Name","MaxPool_40_0","Stride",[2 2])
-    groupedConvolution2dLayer([3 3],32,32*2,"Name","Conv_40_0","Padding",[1 1 1 1])
-    groupedConvolution2dLayer([3 3],32,32*2,"Name","Conv_40_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,32*4,"Name","Conv_40_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,32*4,"Name","Conv_40_1","Padding",[1 1 1 1])
     dropoutLayer(0.5,"Name","dropout_40_1")
     resize2dLayer("Name","resize-scale_40_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,2,"Name","concat_40_0")
-    groupedConvolution2dLayer([3 3],32,16*2,"Name","Conv_40_2","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,16*4,"Name","Conv_40_2","Padding",[1 1 1 1])
     reluLayer("Name","Relu_40_2")
-    groupedConvolution2dLayer([3 3],32,16*2,"Name","Conv_40_3","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,16*4,"Name","Conv_40_3","Padding",[1 1 1 1])
     reluLayer("Name","Relu_40_3")
     ];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,2,"Name","concat_31_0")
-    groupedConvolution2dLayer([3 3],32,16*2,"Name","Conv_31_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,16*4,"Name","Conv_31_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_31_0")
-    groupedConvolution2dLayer([3 3],32,16*2,"Name","Conv_31_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,16*4,"Name","Conv_31_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_31_1")
     dropoutLayer(0.5,"Name","dropout_31_0")
     resize2dLayer("Name","resize-scale_31_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])];
@@ -111,27 +111,27 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,3,"Name","concat_22_0")
-    groupedConvolution2dLayer([3 3],32,8*2,"Name","Conv_22_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,8*4,"Name","Conv_22_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_22_0")
-    groupedConvolution2dLayer([3 3],32,8*2,"Name","Conv_22_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,8*4,"Name","Conv_22_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_22_1")
     resize2dLayer("Name","resize-scale_22_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,3,"Name","concat_12_0")
-    groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_12_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,4*4,"Name","Conv_12_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_12_0")
-    groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_12_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,4*4,"Name","Conv_12_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_12_1")
     resize2dLayer("Name","resize-scale_12_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,3,"Name","concat_13_0")
-    groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_13_2","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,4*4,"Name","Conv_13_2","Padding",[1 1 1 1])
     reluLayer("Name","Relu_13_2")
-    groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_13_3","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,4*4,"Name","Conv_13_3","Padding",[1 1 1 1])
     reluLayer("Name","Relu_13_3")
     resize2dLayer("Name","resize-scale_13_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])
     ];
@@ -139,17 +139,17 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,4,"Name","concat_03_0")
-    groupedConvolution2dLayer([3 3],32,2*2,"Name","Conv_03_0","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,2*4,"Name","Conv_03_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_03_0")
-    groupedConvolution2dLayer([3 3],32,2*2,"Name","Conv_03_1","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,2*4,"Name","Conv_03_1","Padding",[1 1 1 1])
     reluLayer("Name","Relu_03_1")];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = [
     concatenationLayer(3,5,"Name","concat_04_0")
-    groupedConvolution2dLayer([3 3],32,2*2,"Name","Conv_04_2","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,2*4,"Name","Conv_04_2","Padding",[1 1 1 1])
     reluLayer("Name","Relu_04_2")
-    groupedConvolution2dLayer([3 3],32,2*2,"Name","Conv_04_3","Padding",[1 1 1 1])
+    groupedConvolution2dLayer([3 3],32,2*4,"Name","Conv_04_3","Padding",[1 1 1 1])
     reluLayer("Name","Relu_04_3")
     convolution2dLayer([3 3],2,"Name","Conv_04_4","Padding",[1 1 1 1])
     reluLayer("Name","Relu_04_4")
@@ -181,7 +181,7 @@ tempLayers = [
     reluLayer("Name","reluAG_04_0")
     convolution2dLayer([1 1],1,"Name","ConvAG_04_4","Padding","same")
     sigmoidLayer("Name","sigmoidAG_04_0")
-    convolution2dLayer([1 1],4,"Name","ConvAG_04_5","Padding","same")
+    convolution2dLayer([1 1],8,"Name","ConvAG_04_5","Padding","same")
     ];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
@@ -211,7 +211,7 @@ tempLayers = [
     reluLayer("Name","reluAG_13_0")
     convolution2dLayer([1 1],1,"Name","ConvAG_13_4","Padding","same")
     sigmoidLayer("Name","sigmoidAG_13_0")
-    convolution2dLayer([1 1],8,"Name","ConvAG_13_5","Padding","same")
+    convolution2dLayer([1 1],16,"Name","ConvAG_13_5","Padding","same")
     ];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
@@ -240,7 +240,7 @@ tempLayers = [
     reluLayer("Name","reluAG_22_0")
     convolution2dLayer([1 1],1,"Name","ConvAG_22_4","Padding","same")
     sigmoidLayer("Name","sigmoidAG_22_0")
-    convolution2dLayer([1 1],16,"Name","ConvAG_22_5","Padding","same")
+    convolution2dLayer([1 1],32,"Name","ConvAG_22_5","Padding","same")
     ];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
@@ -285,7 +285,7 @@ tempLayers = [
     reluLayer("Name","Relu_Output_0")
     convolution2dLayer(1,numel(classNames))
     softmaxLayer("Name","Softmax")
-    pixelClassificationLayer('Classes',classNames);
+    %pixelClassificationLayer('Classes',classNames);
     ];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
@@ -358,6 +358,6 @@ lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"Relu_40_3","ConvAG_31_0")
 lUnetpp_AgSPPgconv = connectLayers(lUnetpp_AgSPPgconv,"sigmoidLayer_04_0","conv_Output_0");
 
 %% Plot
-%plot(lUnetpp_AgSPPgconv);
+plot(lUnetpp_AgSPPgconv);
 
 analyzeNetwork(lUnetpp_AgSPPgconv);
