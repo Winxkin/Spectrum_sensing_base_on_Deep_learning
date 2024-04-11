@@ -115,4 +115,4 @@ lUnet = connectLayers(lUnet,"sigmoidLayer_1_0","conv_Output_0");
 
 %% Plot Network
 plot(lUnet);
-
+analyzeNetwork(lUnet);

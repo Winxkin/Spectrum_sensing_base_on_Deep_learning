@@ -95,7 +95,7 @@ tempLayers = [
     reluLayer("Name","Relu_40_2")
     convolution2dLayer([3 3],512,"Name","Conv_40_3","Padding",[1 1 1 1])
     reluLayer("Name","Relu_40_3")
-    resize2dLayer("Name","resize-scale_40_1","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])];
+    ];
 lUnetpp = addLayers(lUnetpp,tempLayers);
 
 tempLayers = [
@@ -131,7 +131,9 @@ tempLayers = [
     convolution2dLayer([3 3],128,"Name","Conv_13_2","Padding",[1 1 1 1])
     reluLayer("Name","Relu_13_2")
     convolution2dLayer([3 3],128,"Name","Conv_13_3","Padding",[1 1 1 1])
-    reluLayer("Name","Relu_13_3")];
+    reluLayer("Name","Relu_13_3")
+    resize2dLayer("Name","resize-scale_13_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])
+    ];
 lUnetpp = addLayers(lUnetpp,tempLayers);
 
 tempLayers = [
@@ -191,28 +193,28 @@ lUnetpp = connectLayers(lUnetpp,"Relu_20_1","resize-scale_20_0");
 lUnetpp = connectLayers(lUnetpp,"Relu_20_1","MaxPool_30_0");
 lUnetpp = connectLayers(lUnetpp,"Relu_20_1","concat_21_0/in1");
 lUnetpp = connectLayers(lUnetpp,"resize-scale_20_0","concat_11_0/in2");
-lUnetpp = connectLayers(lUnetpp,"resize-scale_20_0","concat_22_0/in3");
+lUnetpp = connectLayers(lUnetpp,"Relu_20_1","concat_22_0/in3");     
 lUnetpp = connectLayers(lUnetpp,"Relu_30_1","resize-scale_30_0");
 lUnetpp = connectLayers(lUnetpp,"Relu_30_1","dropout_40_0");
 lUnetpp = connectLayers(lUnetpp,"resize-scale_30_0","concat_21_0/in2");
-lUnetpp = connectLayers(lUnetpp,"resize-scale_30_0","concat_31_0/in2");
+lUnetpp = connectLayers(lUnetpp,"Relu_30_1","concat_31_0/in2");     
 lUnetpp = connectLayers(lUnetpp,"Relu_11_1","resize-scale_11_0");
 lUnetpp = connectLayers(lUnetpp,"Relu_11_1","concat_12_0/in1");
 lUnetpp = connectLayers(lUnetpp,"resize-scale_11_0","concat_02_0/in2");
-lUnetpp = connectLayers(lUnetpp,"resize-scale_11_0","concat_13_0/in3");
+lUnetpp = connectLayers(lUnetpp,"Relu_11_1","concat_13_0/in3");     
 lUnetpp = connectLayers(lUnetpp,"dropout_40_0","MaxPool_40_0");
 lUnetpp = connectLayers(lUnetpp,"dropout_40_0","concat_40_0/in2");
 lUnetpp = connectLayers(lUnetpp,"resize-scale_40_0","concat_40_0/in1");
-lUnetpp = connectLayers(lUnetpp,"resize-scale_40_1","concat_31_0/in1");
+lUnetpp = connectLayers(lUnetpp,"Relu_40_3","concat_31_0/in1");
 lUnetpp = connectLayers(lUnetpp,"resize-scale_31_0","concat_22_0/in1");
 lUnetpp = connectLayers(lUnetpp,"Relu_02_1","concat_03_0/in1");
 lUnetpp = connectLayers(lUnetpp,"Relu_02_1","concat_04_0/in3");
-lUnetpp = connectLayers(lUnetpp,"resize-scale_21_0","concat_22_0/in2");
+lUnetpp = connectLayers(lUnetpp,"Relu_21_1","concat_22_0/in2");     
 lUnetpp = connectLayers(lUnetpp,"resize-scale_21_0","concat_12_0/in2");
 lUnetpp = connectLayers(lUnetpp,"resize-scale_22_0","concat_13_0/in1");
-lUnetpp = connectLayers(lUnetpp,"resize-scale_12_0","concat_13_0/in2");
+lUnetpp = connectLayers(lUnetpp,"Relu_12_1","concat_13_0/in2");     
 lUnetpp = connectLayers(lUnetpp,"resize-scale_12_0","concat_03_0/in2");
-lUnetpp = connectLayers(lUnetpp,"Relu_13_3","concat_04_0/in1");
+lUnetpp = connectLayers(lUnetpp,"resize-scale_13_0","concat_04_0/in1"); 
 lUnetpp = connectLayers(lUnetpp,"Relu_03_1","concat_04_0/in2");
 
 %% Connect to output layer
@@ -220,3 +222,4 @@ lUnetpp = connectLayers(lUnetpp,"sigmoidLayer_04_0","conv_Output_0");
 
 %% Plot
 plot(lUnetpp);
+analyzeNetwork(lUnetpp);

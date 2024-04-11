@@ -96,7 +96,7 @@ tempLayers = [
     reluLayer("Name","Relu_40_2")
     groupedConvolution2dLayer([3 3],32,16*2,"Name","Conv_40_3","Padding",[1 1 1 1])
     reluLayer("Name","Relu_40_3")
-    resize2dLayer("Name","resize-scale_40_1","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])];
+    ];
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 
 tempLayers = [
@@ -132,7 +132,9 @@ tempLayers = [
     groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_13_2","Padding",[1 1 1 1])
     reluLayer("Name","Relu_13_2")
     groupedConvolution2dLayer([3 3],32,4*2,"Name","Conv_13_3","Padding",[1 1 1 1])
-    reluLayer("Name","Relu_13_3")];
+    reluLayer("Name","Relu_13_3")
+    resize2dLayer("Name","resize-scale_13_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])
+    ];
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 
 tempLayers = [
@@ -327,7 +329,6 @@ tempLayers = [
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 
 tempLayers = [
-    resize2dLayer("Name","resizescaleAG_13_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])
     convolution2dLayer([3 3],128,"Name","ConvAG_13_2","Padding","same")
     convolution2dLayer([1 1],128,"Name","ConvAG_13_3","Padding","same")
     ];
@@ -350,13 +351,13 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_13_3","additionAG_13_0/i
 %% 21 Position
 tempLayers = [
     convolution2dLayer([3 3],128,"Name","ConvAG_21_0","Padding","same")
-    convolution2dLayer([1 1],256,"Name","ConvAG_21_1","Padding","same")
+    convolution2dLayer([1 1],128,"Name","ConvAG_21_1","Padding","same")
     ];
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 
 tempLayers = [
-    convolution2dLayer([3 3],256,"Name","ConvAG_21_2","Padding","same")
-    convolution2dLayer([1 1],256,"Name","ConvAG_21_3","Padding","same")
+    convolution2dLayer([3 3],64,"Name","ConvAG_21_2","Padding","same")
+    convolution2dLayer([1 1],128,"Name","ConvAG_21_3","Padding","same")
     ];
 
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
@@ -376,14 +377,13 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_21_3","additionAG_21_0/i
 %% 22 Position
 tempLayers = [
     convolution2dLayer([3 3],128,"Name","ConvAG_22_0","Padding","same")
-    convolution2dLayer([1 1],256,"Name","ConvAG_22_1","Padding","same")
+    convolution2dLayer([1 1],128,"Name","ConvAG_22_1","Padding","same")
     ];
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 
 tempLayers = [
-    resize2dLayer("Name","resizescaleAG_22_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])
-    convolution2dLayer([3 3],256,"Name","ConvAG_22_2","Padding","same")
-    convolution2dLayer([1 1],256,"Name","ConvAG_22_3","Padding","same")
+    convolution2dLayer([3 3],64,"Name","ConvAG_22_2","Padding","same")
+    convolution2dLayer([1 1],128,"Name","ConvAG_22_3","Padding","same")
     ];
 
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
@@ -403,15 +403,14 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_22_3","additionAG_22_0/i
 %% Layer 3 -> 1 gate
 %% 31 Position
 tempLayers = [
-    convolution2dLayer([3 3],256,"Name","ConvAG_31_0","Padding","same")
-    convolution2dLayer([1 1],512,"Name","ConvAG_31_1","Padding","same")
+    convolution2dLayer([3 3],128,"Name","ConvAG_31_0","Padding","same")
+    convolution2dLayer([1 1],128,"Name","ConvAG_31_1","Padding","same")
     ];
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
 
 tempLayers = [
-    resize2dLayer("Name","resizescaleAG_31_0","GeometricTransformMode","half-pixel","Method","bilinear","NearestRoundingMode","round","Scale",[2 2])
-    convolution2dLayer([3 3],512,"Name","ConvAG_31_2","Padding","same")
-    convolution2dLayer([1 1],512,"Name","ConvAG_31_3","Padding","same")
+    convolution2dLayer([3 3],64,"Name","ConvAG_31_2","Padding","same")
+    convolution2dLayer([1 1],128,"Name","ConvAG_31_3","Padding","same")
     ];
 
 lUnetpp_AGgconv = addLayers(lUnetpp_AGgconv,tempLayers);
@@ -465,28 +464,28 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_20_1","resize-scale_20_0")
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_20_1","MaxPool_30_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_20_1","concat_21_0/in1");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_20_0","concat_11_0/in2");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_20_0","concat_22_0/in3");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_20_1","concat_22_0/in3");     
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_30_1","resize-scale_30_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_30_1","dropout_40_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_30_0","concat_21_0/in2");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_30_0","concat_31_0/in2");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_30_1","concat_31_0/in2");     
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_11_1","resize-scale_11_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_11_1","concat_12_0/in1");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_11_0","concat_02_0/in2");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_11_0","concat_13_0/in3");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_11_1","concat_13_0/in3");     
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"dropout_40_0","MaxPool_40_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"dropout_40_0","concat_40_0/in2");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_40_0","concat_40_0/in1");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_40_1","concat_31_0/in1");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_40_3","concat_31_0/in1");     
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_31_0","concat_22_0/in1");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_02_1","concat_03_0/in1");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_02_1","concat_04_0/in3");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_21_0","concat_22_0/in2");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_21_1","concat_22_0/in2");             
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_21_0","concat_12_0/in2");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_22_0","concat_13_0/in1");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_12_0","concat_13_0/in2");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_12_1","concat_13_0/in2");             
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_12_0","concat_03_0/in2");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_13_3","concat_04_0/in1");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_13_0","concat_04_0/in1");      
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_03_1","concat_04_0/in2");
 
 %% Connection with attention gate
@@ -508,7 +507,7 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_03_5","concat_03_0/in5")
 
 % 04
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_03_1","ConvAG_04_2");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_13_3","ConvAG_04_0");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_13_0","ConvAG_04_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_04_5","concat_04_0/in6");
 
 %% Layer 1
@@ -523,7 +522,7 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_21_0","ConvAG_12_0
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_12_5","concat_12_0/in4");
 
 % 13
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_12_1","resizescaleAG_13_0");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_12_1","ConvAG_13_2");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_22_0","ConvAG_13_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_13_5","concat_13_0/in4");
 
@@ -535,15 +534,15 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_30_0","ConvAG_21_0
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_21_5","concat_21_0/in3");
 
 % 22
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_21_1","resizescaleAG_22_0");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_21_1","ConvAG_22_2");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_31_0","ConvAG_22_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_22_5","concat_22_0/in4");
 
 %% Layer 3
 
 % 31
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_30_1","resizescaleAG_31_0");
-lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"resize-scale_40_1","ConvAG_31_0");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_30_1","ConvAG_31_2");
+lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"Relu_40_3","ConvAG_31_0");
 lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"ConvAG_31_5","concat_31_0/in3");
 
 
@@ -553,3 +552,4 @@ lUnetpp_AGgconv = connectLayers(lUnetpp_AGgconv,"sigmoidLayer_04_0","conv_Output
 
 %% Plot
 plot(lUnetpp_AGgconv);
+analyzeNetwork(lUnetpp_AGgconv);

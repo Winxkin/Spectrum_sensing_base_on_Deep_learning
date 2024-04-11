@@ -1,6 +1,7 @@
 
 %% Path
 addpath("SpectrumSensingWithDeepLearning5GLTEExample\")
+addpath("SupportFunction\")
 load("UnetModel\UnetDL.mat")
 
 %% Generating training data
@@ -12,7 +13,7 @@ trainDirRoot = fullfile(pwd,"TrainingData");
 classNames = ["Noise" "NR" "LTE" "Unknown"];
 trainingDataSource = "Generated data";
 useCapturedData = true;
-if trainingDataSource == "Generated data"
+if trainingDataSource == "use download data"
   numFramesPerStandard = 5000;
   saveChannelInfo = false;
   helperSpecSenseTrainingData(numFramesPerStandard,classNames,imageSize, ...
@@ -21,6 +22,8 @@ end
 
 %% Load Training Data
 trainDir = fullfile(trainDirRoot,"128x128");
+imageSize = [128 128];
+
 folders = [trainDir,fullfile(trainDir,"LTE_NR")];
 imds = imageDatastore(folders,FileExtensions=".png");
 
@@ -56,18 +59,18 @@ cdsVal = transform(cdsVal, @(data)preprocessTrainingData(data,imageSize));
 cdsTest = transform(cdsTest, @(data)preprocessTrainingData(data,imageSize));
 
 
-
 %% Balance Classes Using Class Weighting
 imageFreq = tbl.PixelCount ./ tbl.ImagePixelCount;
 classWeights = median(imageFreq) ./ imageFreq;
 classWeights = classWeights/(sum(classWeights)+eps(class(classWeights)));
 
+
 %% Select Training Options
 
-mbs = 10;
+mbs = 5;
 opts = trainingOptions("sgdm",...
   MiniBatchSize = mbs,...
-  MaxEpochs = 5, ...
+  MaxEpochs = 20, ...
   LearnRateSchedule = "piecewise",...
   InitialLearnRate = 0.02,...
   LearnRateDropPeriod = 10,...
@@ -79,14 +82,17 @@ opts = trainingOptions("sgdm",...
   Plots = 'training-progress');
 %% Train Deep Neural Network
 trainNow = true;
-layers = network;
+
+layers = dlnetwork(lUnetpp_AgSPPgconv);
+layers = initialize(layers);
 
 if trainNow
     [net,trainInfo] = trainnet(cdsTrain,layers, ...
-        @(ypred,ytrue) lossFunction(ypred,ytrue,classWeights),opts);
-    save(sprintf('myNet_%s_%s',baseNetwork, ...
+        "crossentropy",opts);
+    save(sprintf('myNet_%s_%s',layers, ...
         datetime('now',format='yyyy_MM_dd_HH_mm')), 'net')
 end
+
 
 %% Test Deep Neural Network
 
@@ -228,5 +234,4 @@ else
   figure
   imshow('nr_capture_result2.png')
 end
-
 
