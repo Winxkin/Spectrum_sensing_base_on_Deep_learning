@@ -318,7 +318,7 @@ tempLayers = [
     reluLayer("Name","Relu_Output_0")
     convolution2dLayer(1,numel(classNames))
     softmaxLayer("Name","Softmax")
-    %pixelClassificationLayer('Classes',classNames);
+    pixelClassificationLayer('Classes',classNames);
     ];
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
