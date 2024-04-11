@@ -8,7 +8,7 @@ addpath("SupportFunction\")
 load("UnetModel\UnetDL.mat")
 
 %% Generating training data
-imageSize = {[256 256]};    % pixels
+imageSize = {[128 128]};    % pixels
 sampleRate = 61.44e6;     % Hz
 numSubFrames = 40;        % corresponds to 40 ms
 frameDuration = numSubFrames*1e-3;    % seconds
@@ -24,8 +24,8 @@ if trainingDataSource == "Generated data"
 end
 
 %% Load Training Data
-trainDir = fullfile(trainDirRoot,"256x256");
-imageSize = [256 256];
+trainDir = fullfile(trainDirRoot,"128x128");
+imageSize = [128 128];
 
 folders = [trainDir,fullfile(trainDir,"LTE_NR")];
 imds = imageDatastore(folders,FileExtensions=".png");
@@ -79,19 +79,21 @@ opts = trainingOptions("sgdm",...
   LearnRateDropPeriod = 10,...
   LearnRateDropFactor = 0.1,...
   ValidationData = cdsVal,...
-  ValidationPatience = 5,...
   Shuffle="every-epoch",...
   OutputNetwork = "best-validation-loss",...
   Plots = 'training-progress');
 %% Train Deep Neural Network
 trainNow = true;
+NetWorkname = "lUnetpp_AgSPPgconv";
 layers = lUnetpp_AgSPPgconv;
 
 
 if trainNow
   [net,trainInfo] = trainNetwork(cdsTrain,layers,opts); 
-  save(sprintf('myNet_%s_%s',"lUnetpp_AgSPPgconv", ...
+  save(sprintf('myNet_%s_%s',NetWorkname, ...
     datetime('now',format='yyyy_MM_dd_HH_mm')), 'net')
+  save(sprintf('myNet_%s_%s',NetWorkname, ...
+    datetime('now',format='yyyy_MM_dd_HH_mm')), 'trainInfo')
 end
 
 
