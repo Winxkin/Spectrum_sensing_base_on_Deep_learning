@@ -8,7 +8,7 @@ addpath("SupportFunction\")
 load("UnetModel\UnetDL.mat")
 
 %% Generating training data
-imageSize = {[128 128]};    % pixels
+imageSize = {[256 256]};    % pixels
 sampleRate = 61.44e6;     % Hz
 numSubFrames = 40;        % corresponds to 40 ms
 frameDuration = numSubFrames*1e-3;    % seconds
@@ -16,16 +16,16 @@ trainDirRoot = fullfile(pwd,"TrainingData");
 classNames = ["Noise" "NR" "LTE" "Unknown"];
 trainingDataSource = "Generated data";
 useCapturedData = true;
-if trainingDataSource == "use download data"
-  numFramesPerStandard = 5000;
+if trainingDataSource == "Generated data"
+  numFramesPerStandard = 1000;
   saveChannelInfo = false;
   helperSpecSenseTrainingData(numFramesPerStandard,classNames,imageSize, ...
       trainDirRoot,numSubFrames,sampleRate,saveChannelInfo);
 end
 
 %% Load Training Data
-trainDir = fullfile(trainDirRoot,"128x128");
-imageSize = [128 128];
+trainDir = fullfile(trainDirRoot,"256x256");
+imageSize = [256 256];
 
 folders = [trainDir,fullfile(trainDir,"LTE_NR")];
 imds = imageDatastore(folders,FileExtensions=".png");
@@ -70,7 +70,7 @@ classWeights = classWeights/(sum(classWeights)+eps(class(classWeights)));
 
 %% Select Training Options
 
-mbs = 40;
+mbs = 5;
 opts = trainingOptions("sgdm",...
   MiniBatchSize = mbs,...
   MaxEpochs = 20, ...
