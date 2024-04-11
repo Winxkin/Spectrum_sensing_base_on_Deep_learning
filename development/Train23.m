@@ -1,4 +1,7 @@
 
+%% Reference
+openExample('deeplearning_shared/SpectrumSensingWithDeepLearning5GLTEExample')
+
 %% Path
 addpath("SpectrumSensingWithDeepLearning5GLTEExample\")
 addpath("SupportFunction\")
@@ -67,7 +70,7 @@ classWeights = classWeights/(sum(classWeights)+eps(class(classWeights)));
 
 %% Select Training Options
 
-mbs = 5;
+mbs = 40;
 opts = trainingOptions("sgdm",...
   MiniBatchSize = mbs,...
   MaxEpochs = 20, ...
@@ -82,15 +85,13 @@ opts = trainingOptions("sgdm",...
   Plots = 'training-progress');
 %% Train Deep Neural Network
 trainNow = true;
+layers = lUnetpp_AgSPPgconv;
 
-layers = dlnetwork(lUnetpp_AgSPPgconv);
-layers = initialize(layers);
 
 if trainNow
-    [net,trainInfo] = trainnet(cdsTrain,layers, ...
-        "crossentropy",opts);
-    save(sprintf('myNet_%s_%s',layers, ...
-        datetime('now',format='yyyy_MM_dd_HH_mm')), 'net')
+  [net,trainInfo] = trainNetwork(cdsTrain,layers,opts); 
+  save(sprintf('myNet_%s_%s',"lUnetpp_AgSPPgconv", ...
+    datetime('now',format='yyyy_MM_dd_HH_mm')), 'net')
 end
 
 
