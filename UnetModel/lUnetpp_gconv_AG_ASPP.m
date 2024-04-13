@@ -164,13 +164,13 @@ lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 %% ASSP Layer
 
 
-tempLayers = convolution2dLayer([3 3],64,"Name","ASSP_conv_01","Padding","same");
+tempLayers = convolution2dLayer([3 3],64,"Name","ASSP_conv_01","DilationFactor",[3 3],"Padding","same");
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
-tempLayers = convolution2dLayer([3 3],128,"Name","ASSP_conv_02","DilationFactor",[2 2],"Padding","same");
+tempLayers = convolution2dLayer([3 3],128,"Name","ASSP_conv_02","DilationFactor",[6 6],"Padding","same");
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
-tempLayers = convolution2dLayer([3 3],192,"Name","ASSP_conv_03","DilationFactor",[3 3],"Padding","same");
+tempLayers = convolution2dLayer([3 3],192,"Name","ASSP_conv_03","DilationFactor",[9 9],"Padding","same");
 lUnetpp_AgSPPgconv = addLayers(lUnetpp_AgSPPgconv,tempLayers);
 
 tempLayers = convolution2dLayer([1 1],32,"Name","ASSP_conv_04","Padding",[0 0 0 0]);
