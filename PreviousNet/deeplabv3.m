@@ -183,7 +183,7 @@ tempLayers = [
     batchNormalizationLayer("Name","dec_bn4")
     reluLayer("Name","dec_relu4")
     convolution2dLayer([1 1],numel(classNames),"Name","scorer","BiasLearnRateFactor",0,"WeightLearnRateFactor",10)
-    transposedConv2dLayer([8 8],3,"Name","dec_upsample2","BiasLearnRateFactor",0,"Cropping",[2 2 2 2],"Stride",[4 4],"WeightLearnRateFactor",0)];
+    transposedConv2dLayer([8 8],numel(classNames),"Name","dec_upsample2","BiasLearnRateFactor",0,"Cropping",[2 2 2 2],"Stride",[4 4],"WeightLearnRateFactor",0)];
 deeplab = addLayers(deeplab,tempLayers);
 
 
