@@ -124,7 +124,7 @@ cm.Title = 'Confusion Matrix - Synthetic';
 
 %% Separate the test data into captured and generated sets.
 
-capturedIdx = contains(imdsTest.Files,'captured');
+capturedIdx = contains(imdsTest.Files,'128x128');
 imdsTestCaptured = subset(imdsTest,capturedIdx);
 pxdsTestCaptured = subset(pxdsTest,capturedIdx);
 imdsTestGenerated = subset(imdsTest,~capturedIdx);
@@ -143,7 +143,8 @@ cm.Title = "Normalized Confusion Matrix";
 
 %% The confusion matrix shows that the network confuses NR signals with Noise or Unknown signals. Examining the captured signals reveals that the captured signals with file prefix CF3550 has very low SNR and the network is having a hard time to identify signals correctly.
 
-CF3550Indices = contains(imdsTestCaptured.Files,'CF3550');
+filename = 'LTE_NR_frame_610';
+CF3550Indices = contains(imdsTestCaptured.Files,filename);
 idx = find(CF3550Indices,1);
 rcvdSpectrogram = readimage(imdsTestCaptured,idx);
 trueLabels = readimage(pxdsTestCaptured,idx);
@@ -168,18 +169,14 @@ cm = confusionchart(metrics.ConfusionMatrix.Variables, ...
 cm.Title = "Normalized Confusion Matrix";
 %% Identify 5G NR and LTE Signals in Spectrogram
 
-signals = find(~CF3550Indices);
-numSignals = length(signals);
-idx = 13;
-rcvdSpectrogram = readimage(imdsTestCaptured,signals(idx));
-trueLabels = readimage(pxdsTestCaptured,signals(idx));
-predictedLabels = readimage(pxdsResultsCaptured,signals(idx));
+filename2 = 'LTE_NR_frame_1622';
+CF3550Indices2 = contains(imdsTestCaptured2.Files,filename2);
+idx2 = find(CF3550Indices2,1);
+rcvdSpectrogram2 = readimage(imdsTestCaptured2,idx2);
+trueLabels2 = readimage(pxdsTestCaptured2,idx2);
+predictedLabels2 = readimage(pxdsResultsCaptured,idx2);
 figure
-helperSpecSenseDisplayResults(rcvdSpectrogram,trueLabels,predictedLabels, ...
-  classNames,250e6,0,frameDuration)
-
-figure
-helperSpecSenseDisplayIdentifiedSignals(rcvdSpectrogram,predictedLabels, ...
+helperSpecSenseDisplayResults(rcvdSpectrogram2,trueLabels2,predictedLabels2, ...
   classNames,250e6,0,frameDuration)
 
 %% Test with Captured Data using SDR
