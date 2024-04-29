@@ -101,6 +101,10 @@ end
 
 %% Test Deep Neural Network
 
+dataDir = fullfile(trainDir,"LTE_NR");
+imdsLTENR = imageDatastore(dataDir,FileExtensions=".png");
+pxdsResultsLTENR = semanticseg(imdsLTENR,net,MinibatchSize=mbs,WriteLocation=tempdir);
+
 %% Running semantic segmentation network
 dataDir = fullfile(trainDir,"LTE_NR");
 imdsLTENR = imageDatastore(dataDir,FileExtensions=".png");
@@ -128,8 +132,7 @@ pxdsTestGenerated = subset(pxdsTest,~capturedIdx);
 
 %% Repeat the same process, considering only the frames with captured data in the test set.
 
-pxdsResultsCaptured = semanticseg(imdsTestCaptured,net,MinibatchSize=mbs,WriteLocation=tempdir, ...
-    Classes=classNames);
+pxdsResultsCaptured = semanticseg(imdsTestCaptured,net,MinibatchSize=mbs,WriteLocation=tempdir);
 
 metrics = evaluateSemanticSegmentation(pxdsResultsCaptured,pxdsTestCaptured);
 
@@ -153,8 +156,7 @@ helperSpecSenseDisplayResults(rcvdSpectrogram,trueLabels,predictedLabels, ...
 
 imdsTestCaptured2 = subset(imdsTestCaptured,~CF3550Indices);
 pxdsTestCaptured2 = subset(pxdsTestCaptured,~CF3550Indices);
-pxdsResultsCaptured2 = semanticseg(imdsTestCaptured2,net,MinibatchSize=mbs,WriteLocation=tempdir, ...
-    Classes=classNames);
+pxdsResultsCaptured2 = semanticseg(imdsTestCaptured2,net,MinibatchSize=mbs,WriteLocation=tempdir);
 
 metrics = evaluateSemanticSegmentation(pxdsResultsCaptured2,pxdsTestCaptured2);
 
@@ -164,7 +166,6 @@ figure
 cm = confusionchart(metrics.ConfusionMatrix.Variables, ...
   classNames, Normalization="row-normalized");
 cm.Title = "Normalized Confusion Matrix";
-
 %% Identify 5G NR and LTE Signals in Spectrogram
 
 signals = find(~CF3550Indices);
@@ -176,7 +177,6 @@ predictedLabels = readimage(pxdsResultsCaptured,signals(idx));
 figure
 helperSpecSenseDisplayResults(rcvdSpectrogram,trueLabels,predictedLabels, ...
   classNames,250e6,0,frameDuration)
-
 
 figure
 helperSpecSenseDisplayIdentifiedSignals(rcvdSpectrogram,predictedLabels, ...
@@ -197,7 +197,6 @@ else
     disp("Click Add-Ons in the Home tab of the MATLAB toolstrip to install the support package.")
     disp("Skipping SDR test.")
 end
-
 
 if runSDRSection
   % Set up PlutoSDR receiver
@@ -239,4 +238,3 @@ else
   figure
   imshow('nr_capture_result2.png')
 end
-
