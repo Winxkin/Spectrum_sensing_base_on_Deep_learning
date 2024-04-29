@@ -12,12 +12,12 @@ imageSize = {[128 128]};    % pixels
 sampleRate = 61.44e6;     % Hz
 numSubFrames = 40;        % corresponds to 40 ms
 frameDuration = numSubFrames*1e-3;    % seconds
-trainDirRoot = fullfile(pwd,"TrainingData");
+trainDirRoot = fullfile(pwd,"TrainingData\~5dB");
 classNames = ["Noise" "NR" "LTE" "Unknown"];
 trainingDataSource = "Generated data";
 useCapturedData = true;
 if trainingDataSource == "Generated data"
-  numFramesPerStandard = 1000;
+  numFramesPerStandard = 200;
   saveChannelInfo = false;
   helperSpecSenseTrainingData(numFramesPerStandard,classNames,imageSize, ...
       trainDirRoot,numSubFrames,sampleRate,saveChannelInfo);
@@ -138,12 +138,12 @@ metrics = evaluateSemanticSegmentation(pxdsResultsCaptured,pxdsTestCaptured);
 
 %% Replot the normalized confusion matrix.
 cm = confusionchart(metrics.ConfusionMatrix.Variables, ...
-  classNames, Normalization="row-normalized");
-cm.Title = "Normalized Confusion Matrix";
+  classNames, 'Normalization', 'row-normalized');
+cm.Title = "WiComNet: Normalized Confusion Matrix";
 
 %% The confusion matrix shows that the network confuses NR signals with Noise or Unknown signals. Examining the captured signals reveals that the captured signals with file prefix CF3550 has very low SNR and the network is having a hard time to identify signals correctly.
 
-filename = 'LTE_NR_frame_610';
+filename = 'LTE_NR_frame_1271';
 CF3550Indices = contains(imdsTestCaptured.Files,filename);
 idx = find(CF3550Indices,1);
 rcvdSpectrogram = readimage(imdsTestCaptured,idx);
