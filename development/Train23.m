@@ -12,12 +12,12 @@ imageSize = {[128 128]};    % pixels
 sampleRate = 61.44e6;     % Hz
 numSubFrames = 40;        % corresponds to 40 ms
 frameDuration = numSubFrames*1e-3;    % seconds
-trainDirRoot = fullfile(pwd,"TrainingData\~5dB");
+trainDirRoot = fullfile(pwd,"TrainingData\alldB");
 classNames = ["Noise" "NR" "LTE" "Unknown"];
 trainingDataSource = "Generated data";
 useCapturedData = true;
 if trainingDataSource == "Generated data"
-  numFramesPerStandard = 200;
+  numFramesPerStandard = 100;
   saveChannelInfo = false;
   helperSpecSenseTrainingData(numFramesPerStandard,classNames,imageSize, ...
       trainDirRoot,numSubFrames,sampleRate,saveChannelInfo);
@@ -98,6 +98,29 @@ if trainNow
     datetime('now',format='yyyy_MM_dd_HH_mm')), 'trainInfo')
 end
 
+%% Test Deep Neural Network at diffrence SNR dB
+trainDirRoot = fullfile(pwd,"TrainingData\30dB");
+trainDir = fullfile(trainDirRoot,"128x128");
+imageSize = [128 128];
+
+folders = [trainDir,fullfile(trainDir,"LTE_NR")];
+imds = imageDatastore(folders,FileExtensions=".png");
+
+numClasses = length(classNames);
+pixelLabelID = floor((0:numClasses-1)/(numClasses-1)*255);
+
+dataDir = fullfile(trainDir,"LTE_NR");
+imdsSNR = imageDatastore(dataDir,FileExtensions=".png");
+pxdsResultsLTENR = semanticseg(imdsSNR,net,MinibatchSize=mbs,WriteLocation=tempdir, ...
+    Classes=classNames);
+
+pxdsTruthSNR = pixelLabelDatastore(dataDir,classNames,pixelLabelID,...
+  FileExtensions=".hdf");
+metrics = evaluateSemanticSegmentation(pxdsResultsLTENR,pxdsTruthSNR);
+
+cm = confusionchart(metrics.ConfusionMatrix.Variables, ...
+  classNames, Normalization='row-normalized');
+cm.Title = 'Confusion Matrix - SNR = [0 80] dB';
 
 %% Test Deep Neural Network
 
