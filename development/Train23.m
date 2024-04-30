@@ -99,7 +99,7 @@ if trainNow
 end
 
 %% Test Deep Neural Network at diffrence SNR dB
-trainDirRoot = fullfile(pwd,"TrainingData\30dB");
+trainDirRoot = fullfile(pwd,"TrainingData\alldB");
 trainDir = fullfile(trainDirRoot,"128x128");
 imageSize = [128 128];
 
@@ -120,7 +120,7 @@ metrics = evaluateSemanticSegmentation(pxdsResultsLTENR,pxdsTruthSNR);
 
 cm = confusionchart(metrics.ConfusionMatrix.Variables, ...
   classNames, Normalization='row-normalized');
-cm.Title = 'Confusion Matrix - SNR = [0 80] dB';
+cm.Title = 'Confusion Matrix - SNR = [0 80]dB';
 
 %% Test Deep Neural Network
 
