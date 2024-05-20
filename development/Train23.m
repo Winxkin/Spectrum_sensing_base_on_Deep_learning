@@ -99,7 +99,7 @@ if trainNow
 end
 
 %% Test Deep Neural Network at diffrence SNR dB
-trainDirRoot = fullfile(pwd,"TrainingData\alldB");
+trainDirRoot = fullfile(pwd,"TrainingData\30dB");
 trainDir = fullfile(trainDirRoot,"128x128");
 imageSize = [128 128];
 
@@ -118,9 +118,42 @@ pxdsTruthSNR = pixelLabelDatastore(dataDir,classNames,pixelLabelID,...
   FileExtensions=".hdf");
 metrics = evaluateSemanticSegmentation(pxdsResultsLTENR,pxdsTruthSNR);
 
-cm = confusionchart(metrics.ConfusionMatrix.Variables, ...
-  classNames, Normalization='row-normalized');
-cm.Title = 'Confusion Matrix - SNR = [0 80]dB';
+
+classNamescustom = ["Noise" "NR" "LTE"];
+% rows_to_keep = any(metrics.ConfusionMatrix.Variables, 2); % Rows with at least one non-zero element
+% cols_to_keep = any(metrics.ConfusionMatrix.Variables, 1); % Columns with at least one non-zero element
+% 
+% conf_matrix_trimmed = metrics.ConfusionMatrix.Variables(rows_to_keep, cols_to_keep);
+
+conf_matrix_0 = [
+    475747   19784   33237  ;     
+    69815    531431  124386  ;   
+    14192    5578    298694     
+];
+
+conf_matrix_10 = [
+    583042   13415   6807  ;     
+    40785    584742  1033  ;   
+    2976    1345    322335     
+];
+
+conf_matrix_20 = [
+    540741   12742   6773  ;     
+    40541    600534  461  ;   
+    668    309    304559     
+];
+
+conf_matrix_30 = [
+    641189   11476   7815  ;     
+    37999    620155  918  ;   
+    1147    459    350010     
+];
+
+
+
+cm = confusionchart(conf_matrix_0, ...
+  classNamescustom, Normalization='row-normalized');
+cm.Title = 'Confusion Matrix - SNR = 0 dB';
 
 %% Test Deep Neural Network
 
