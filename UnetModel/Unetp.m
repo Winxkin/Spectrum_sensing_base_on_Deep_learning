@@ -3,7 +3,7 @@ lUnetp = layerGraph();
 %% Define basic layer for Unet network
 
 tempLayers = [
-    imageInputLayer([128 128 3],"Name","inputs","Normalization","none")
+    imageInputLayer([128 128 3],"Name","inputs","Normalization","rescale-zero-one")
     convolution2dLayer([3 3],64,"Name","Conv_00_0","Padding",[1 1 1 1])
     reluLayer("Name","Relu_00_0")
     convolution2dLayer([3 3],64,"Name","Conv_00_1","Padding",[1 1 1 1])

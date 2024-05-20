@@ -1,4 +1,7 @@
 
+%% Reference
+openExample('deeplearning_shared/SpectrumSensingWithDeepLearning5GLTEExample')
+
 %% Path
 addpath("SpectrumSensingWithDeepLearning5GLTEExample\")
 addpath("SupportFunction\")
@@ -9,12 +12,12 @@ imageSize = {[128 128]};    % pixels
 sampleRate = 61.44e6;     % Hz
 numSubFrames = 40;        % corresponds to 40 ms
 frameDuration = numSubFrames*1e-3;    % seconds
-trainDirRoot = fullfile(pwd,"TrainingData");
+trainDirRoot = fullfile(pwd,"TrainingData\alldB");
 classNames = ["Noise" "NR" "LTE" "Unknown"];
 trainingDataSource = "Generated data";
 useCapturedData = true;
-if trainingDataSource == "use download data"
-  numFramesPerStandard = 5000;
+if trainingDataSource == "Generated data"
+  numFramesPerStandard = 100;
   saveChannelInfo = false;
   helperSpecSenseTrainingData(numFramesPerStandard,classNames,imageSize, ...
       trainDirRoot,numSubFrames,sampleRate,saveChannelInfo);
@@ -70,31 +73,93 @@ classWeights = classWeights/(sum(classWeights)+eps(class(classWeights)));
 mbs = 5;
 opts = trainingOptions("sgdm",...
   MiniBatchSize = mbs,...
-  MaxEpochs = 20, ...
+  MaxEpochs = 40, ...
   LearnRateSchedule = "piecewise",...
-  InitialLearnRate = 0.02,...
+  InitialLearnRate = 0.001,...
   LearnRateDropPeriod = 10,...
   LearnRateDropFactor = 0.1,...
   ValidationData = cdsVal,...
-  ValidationPatience = 5,...
+  ValidationFrequency = 1000,...
+  VerboseFrequency = 1000,...
   Shuffle="every-epoch",...
   OutputNetwork = "best-validation-loss",...
   Plots = 'training-progress');
 %% Train Deep Neural Network
 trainNow = true;
+NetWorkname = "lUnetpp_AgSPPgconv";
+layers = lUnetpp_AgSPPgconv;
 
-layers = dlnetwork(lUnetpp_AgSPPgconv);
-layers = initialize(layers);
 
 if trainNow
-    [net,trainInfo] = trainnet(cdsTrain,layers, ...
-        "crossentropy",opts);
-    save(sprintf('myNet_%s_%s',layers, ...
-        datetime('now',format='yyyy_MM_dd_HH_mm')), 'net')
+  [net,trainInfo] = trainNetwork(cdsTrain,layers,opts); 
+  save(sprintf('myNet_%s_%s',NetWorkname, ...
+    datetime('now',format='yyyy_MM_dd_HH_mm')), 'net')
+  save(sprintf('myNetInfo_%s_%s',NetWorkname, ...
+    datetime('now',format='yyyy_MM_dd_HH_mm')), 'trainInfo')
 end
 
+%% Test Deep Neural Network at diffrence SNR dB
+trainDirRoot = fullfile(pwd,"TrainingData\30dB");
+trainDir = fullfile(trainDirRoot,"128x128");
+imageSize = [128 128];
+
+folders = [trainDir,fullfile(trainDir,"LTE_NR")];
+imds = imageDatastore(folders,FileExtensions=".png");
+
+numClasses = length(classNames);
+pixelLabelID = floor((0:numClasses-1)/(numClasses-1)*255);
+
+dataDir = fullfile(trainDir,"LTE_NR");
+imdsSNR = imageDatastore(dataDir,FileExtensions=".png");
+pxdsResultsLTENR = semanticseg(imdsSNR,net,MinibatchSize=mbs,WriteLocation=tempdir, ...
+    Classes=classNames);
+
+pxdsTruthSNR = pixelLabelDatastore(dataDir,classNames,pixelLabelID,...
+  FileExtensions=".hdf");
+metrics = evaluateSemanticSegmentation(pxdsResultsLTENR,pxdsTruthSNR);
+
+
+classNamescustom = ["Noise" "NR" "LTE"];
+% rows_to_keep = any(metrics.ConfusionMatrix.Variables, 2); % Rows with at least one non-zero element
+% cols_to_keep = any(metrics.ConfusionMatrix.Variables, 1); % Columns with at least one non-zero element
+% 
+% conf_matrix_trimmed = metrics.ConfusionMatrix.Variables(rows_to_keep, cols_to_keep);
+
+conf_matrix_0 = [
+    475747   19784   33237  ;     
+    69815    531431  124386  ;   
+    14192    5578    298694     
+];
+
+conf_matrix_10 = [
+    583042   13415   6807  ;     
+    40785    584742  1033  ;   
+    2976    1345    322335     
+];
+
+conf_matrix_20 = [
+    540741   12742   6773  ;     
+    40541    600534  461  ;   
+    668    309    304559     
+];
+
+conf_matrix_30 = [
+    641189   11476   7815  ;     
+    37999    620155  918  ;   
+    1147    459    350010     
+];
+
+
+
+cm = confusionchart(conf_matrix_0, ...
+  classNamescustom, Normalization='row-normalized');
+cm.Title = 'Confusion Matrix - SNR = 0 dB';
 
 %% Test Deep Neural Network
+
+dataDir = fullfile(trainDir,"LTE_NR");
+imdsLTENR = imageDatastore(dataDir,FileExtensions=".png");
+pxdsResultsLTENR = semanticseg(imdsLTENR,net,MinibatchSize=mbs,WriteLocation=tempdir);
 
 %% Running semantic segmentation network
 dataDir = fullfile(trainDir,"LTE_NR");
@@ -115,7 +180,7 @@ cm.Title = 'Confusion Matrix - Synthetic';
 
 %% Separate the test data into captured and generated sets.
 
-capturedIdx = contains(imdsTest.Files,'captured');
+capturedIdx = contains(imdsTest.Files,'128x128');
 imdsTestCaptured = subset(imdsTest,capturedIdx);
 pxdsTestCaptured = subset(pxdsTest,capturedIdx);
 imdsTestGenerated = subset(imdsTest,~capturedIdx);
@@ -123,19 +188,19 @@ pxdsTestGenerated = subset(pxdsTest,~capturedIdx);
 
 %% Repeat the same process, considering only the frames with captured data in the test set.
 
-pxdsResultsCaptured = semanticseg(imdsTestCaptured,net,MinibatchSize=mbs,WriteLocation=tempdir, ...
-    Classes=classNames);
+pxdsResultsCaptured = semanticseg(imdsTestCaptured,net,MinibatchSize=mbs,WriteLocation=tempdir);
 
 metrics = evaluateSemanticSegmentation(pxdsResultsCaptured,pxdsTestCaptured);
 
 %% Replot the normalized confusion matrix.
 cm = confusionchart(metrics.ConfusionMatrix.Variables, ...
-  classNames, Normalization="row-normalized");
-cm.Title = "Normalized Confusion Matrix";
+  classNames, 'Normalization', 'row-normalized');
+cm.Title = "WiComNet: Normalized Confusion Matrix";
 
 %% The confusion matrix shows that the network confuses NR signals with Noise or Unknown signals. Examining the captured signals reveals that the captured signals with file prefix CF3550 has very low SNR and the network is having a hard time to identify signals correctly.
 
-CF3550Indices = contains(imdsTestCaptured.Files,'CF3550');
+filename = 'LTE_NR_frame_1271';
+CF3550Indices = contains(imdsTestCaptured.Files,filename);
 idx = find(CF3550Indices,1);
 rcvdSpectrogram = readimage(imdsTestCaptured,idx);
 trueLabels = readimage(pxdsTestCaptured,idx);
@@ -148,8 +213,7 @@ helperSpecSenseDisplayResults(rcvdSpectrogram,trueLabels,predictedLabels, ...
 
 imdsTestCaptured2 = subset(imdsTestCaptured,~CF3550Indices);
 pxdsTestCaptured2 = subset(pxdsTestCaptured,~CF3550Indices);
-pxdsResultsCaptured2 = semanticseg(imdsTestCaptured2,net,MinibatchSize=mbs,WriteLocation=tempdir, ...
-    Classes=classNames);
+pxdsResultsCaptured2 = semanticseg(imdsTestCaptured2,net,MinibatchSize=mbs,WriteLocation=tempdir);
 
 metrics = evaluateSemanticSegmentation(pxdsResultsCaptured2,pxdsTestCaptured2);
 
@@ -159,22 +223,16 @@ figure
 cm = confusionchart(metrics.ConfusionMatrix.Variables, ...
   classNames, Normalization="row-normalized");
 cm.Title = "Normalized Confusion Matrix";
-
 %% Identify 5G NR and LTE Signals in Spectrogram
 
-signals = find(~CF3550Indices);
-numSignals = length(signals);
-idx = 13;
-rcvdSpectrogram = readimage(imdsTestCaptured,signals(idx));
-trueLabels = readimage(pxdsTestCaptured,signals(idx));
-predictedLabels = readimage(pxdsResultsCaptured,signals(idx));
+filename2 = 'LTE_NR_frame_1622';
+CF3550Indices2 = contains(imdsTestCaptured2.Files,filename2);
+idx2 = find(CF3550Indices2,1);
+rcvdSpectrogram2 = readimage(imdsTestCaptured2,idx2);
+trueLabels2 = readimage(pxdsTestCaptured2,idx2);
+predictedLabels2 = readimage(pxdsResultsCaptured,idx2);
 figure
-helperSpecSenseDisplayResults(rcvdSpectrogram,trueLabels,predictedLabels, ...
-  classNames,250e6,0,frameDuration)
-
-
-figure
-helperSpecSenseDisplayIdentifiedSignals(rcvdSpectrogram,predictedLabels, ...
+helperSpecSenseDisplayResults(rcvdSpectrogram2,trueLabels2,predictedLabels2, ...
   classNames,250e6,0,frameDuration)
 
 %% Test with Captured Data using SDR
@@ -192,7 +250,6 @@ else
     disp("Click Add-Ons in the Home tab of the MATLAB toolstrip to install the support package.")
     disp("Skipping SDR test.")
 end
-
 
 if runSDRSection
   % Set up PlutoSDR receiver
@@ -234,4 +291,3 @@ else
   figure
   imshow('nr_capture_result2.png')
 end
-
